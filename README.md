@@ -31,8 +31,6 @@ Copie `data/cis-aws.js` para, por exemplo, `data/well-architected.js`, troque os
 
 ## Referências
 
-Pesquisa feita em 05/11/2026. Itens marcados com **[confirmar]** vieram de fonte secundária ou de texto preliminar e devem ser conferidos na fonte oficial antes da entrega.
-
 ### 1. CIS AWS Foundations Benchmark
 
 - Página oficial: https://www.cisecurity.org/benchmark/amazon-web-services
