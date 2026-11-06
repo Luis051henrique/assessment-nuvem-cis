@@ -78,12 +78,3 @@ Pesquisa feita em 05/11/2026. Itens marcados com **[confirmar]** vieram de fonte
 | LGPD + ANPD | Obrigação legal e orientação | Por artigo e checklist | Quem trata dados pessoais |
 | BACEN | Norma regulatória | Por artigo da resolução | Só instituições reguladas pelo BC |
 
-## Próximos passos
-
-- [x] Pesquisar e anotar referências
-- [ ] Baixar o PDF do CIS na versão escolhida e registrar a numeração oficial
-- [ ] Obter o guia e o checklist da ANPD no site oficial
-- [ ] Ler o texto final da Res. CMN 5.274/2025 e os arts. 11 a 18 da 4.893
-- [ ] Combinar com o professor se a entrega precisa de um ou de todos os frameworks
-- [ ] Incluir Well-Architected, LGPD e BACEN
-- [ ] Salvar e carregar respostas (JSON)
