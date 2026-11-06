@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assessment de Segurança em Nuvem</title>
+<style>
+:root{color-scheme:light;--bg:#f6f7f9;--card:#fff;--tx:#1b2430;--mut:#5b6777;--bd:#dde2e9;--ac:#1d5fd1;--ok:#1a8a4a;--pa:#b87a00;--no:#c43b2f;--cr:#8e1d3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#12161c;--card:#1b222b;--tx:#e8edf3;--mut:#9aa7b7;--bd:#2c3744;--ac:#6ea3ff;--ok:#4cc17f;--pa:#e6b440;--no:#ef7a6e;--cr:#ff7a9a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:1.5rem;margin:.2em 0}h2{font-size:1.15rem;margin:1.6em 0 .6em}
+.sub{color:var(--mut);margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;margin:10px 0}
+.req .t{font-weight:600}.req .id{color:var(--mut);font-weight:400;margin-right:6px;font-size:.85rem}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.opts label{border:1px solid var(--bd);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.9rem}
+.opts input{position:absolute;opacity:0}
+.opts label:has(input:checked){background:var(--ac);border-color:var(--ac);color:#fff}
+input[type=text]{width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--card);color:var(--tx);font:inherit}
+button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer}
+button.sec{background:transparent;color:var(--ac);border:1px solid var(--ac)}
+.bar{height:10px;background:var(--bd);border-radius:6px;overflow:hidden}.bar>i{display:block;height:100%}
+.row{display:flex;justify-content:space-between;gap:10px;margin:12px 0 4px;font-size:.95rem}
+.tag{display:inline-block;padding:1px 9px;border-radius:999px;color:#fff;font-size:.8rem;font-weight:600}
+.Baixo,.Baixa{background:var(--ok)}.Médio,.Média{background:var(--pa)}.Alto,.Alta{background:var(--no)}.Crítico,.Crítica{background:var(--cr)}
+#progress{position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:2}
+#report{display:none}
+table{width:100%;border-collapse:collapse;font-size:.92rem}td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bd);vertical-align:top}
+.big{font-size:2.4rem;font-weight:700;line-height:1}
+@media print{#form,#progress,.noprint{display:none!important}#report{display:block!important}body{background:#fff;color:#000}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Assessment de Segurança em Nuvem</h1>
+  <p class="sub" id="fw"></p>
+  <div id="form">
+    <div class="card"><label for="empresa"><strong>Empresa avaliada</strong></label><br><input type="text" id="empresa" placeholder="Nome da empresa"></div>
+    <div id="progress"><div class="row"><span id="pgtxt"></span><span></span></div><div class="bar"><i id="pgbar" style="width:0;background:var(--ac)"></i></div></div>
+    <div id="questions"></div>
+    <p><button id="gen">Gerar relatório</button></p>
+  </div>
+  <section id="report"></section>
+</main>
+<script src="data/cis-aws.js"></script>
+<script>
+const F = window.FRAMEWORK, A = {};
+const OPTS = [["1","Atende"],["0.5","Atende parcialmente"],["0","Não atende"],["na","Não se aplica"]];
+const $ = id => document.getElementById(id);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+$("fw").textContent = "Framework: " + F.nome + " · " + F.controls.length + " requisitos";
+
+F.domains.forEach(d => {
+  $("questions").appendChild(el("h2", "", d.nome));
+  F.controls.filter(c => c.domain === d.id).forEach(c => {
+    const card = el("div", "card req");
+    const t = el("div", "t"); t.append(el("span", "id", c.id), document.createTextNode(c.q));
+    const o = el("div", "opts");
+    OPTS.forEach(([v, l]) => {
+      const lb = el("label"), r = document.createElement("input");
+      r.type = "radio"; r.name = c.id; r.value = v;
+      r.onchange = () => { A[c.id] = v; progress(); };
+      lb.append(r, document.createTextNode(l)); o.appendChild(lb);
+    });
+    card.append(t, o); $("questions").appendChild(card);
+  });
+});
+
+function progress() {
+  const n = Object.keys(A).length, tot = F.controls.length;
+  $("pgtxt").textContent = n + " de " + tot + " respondidos";
+  $("pgbar").style.width = (n / tot * 100) + "%";
+}
+progress();
+
+const risco = p => p >= 90 ? "Baixo" : p >= 70 ? "Médio" : p >= 40 ? "Alto" : "Crítico";
+const cor = p => p >= 90 ? "var(--ok)" : p >= 70 ? "var(--pa)" : p >= 40 ? "var(--no)" : "var(--cr)";
+const prio = s => s >= 3 ? "Crítica" : s >= 1.5 ? "Alta" : s >= 1 ? "Média" : "Baixa";
+
+function score(list) {
+  let sw = 0, ss = 0;
+  list.forEach(c => { const a = A[c.id]; if (a === undefined || a === "na") return; sw += c.w; ss += c.w * parseFloat(a); });
+  return sw ? ss / sw * 100 : null;
+}
+
+function bar(nome, p) {
+  const w = el("div"), r = el("div", "row");
+  const right = el("span"); 
+  if (p === null) right.textContent = "sem respostas";
+  else { right.append(document.createTextNode(p.toFixed(0) + "%  "), el("span", "tag " + risco(p), "Risco " + risco(p))); }
+  r.append(el("strong", "", nome), right);
+  const b = el("div", "bar"), i = document.createElement("i");
+  i.style.width = (p || 0) + "%"; i.style.background = p === null ? "var(--bd)" : cor(p);
+  b.appendChild(i); w.append(r, b); return w;
+}
+
+$("gen").onclick = () => {
+  if (!Object.keys(A).length) { alert("Responda ao menos um requisito."); return; }
+  const rep = $("report"); rep.replaceChildren();
+  const total = score(F.controls);
+  const pend = F.controls.length - Object.keys(A).length;
+  rep.appendChild(el("h1", "", "Relatório de Assessment"));
+  rep.appendChild(el("p", "sub", (($("empresa").value || "Empresa não informada")) + " · " + F.nome + " · " + new Date().toLocaleDateString("pt-BR")));
+  const c1 = el("div", "card");
+  c1.append(el("div", "big", total.toFixed(0) + "% de aderência"), el("p", "", "Nível de risco geral: "));
+  c1.lastChild.appendChild(el("span", "tag " + risco(total), risco(total)));
+  if (pend) c1.appendChild(el("p", "sub", pend + " requisito(s) sem resposta foram desconsiderados no cálculo."));
+  rep.appendChild(c1);
+
+  rep.appendChild(el("h2", "", "Aderência por domínio"));
+  const c2 = el("div", "card");
+  F.domains.forEach(d => c2.appendChild(bar(d.nome, score(F.controls.filter(c => c.domain === d.id)))));
+  rep.appendChild(c2);
+
+  rep.appendChild(el("h2", "", "Plano de ação para chegar a 100%"));
+  const gaps = F.controls.filter(c => A[c.id] !== undefined && A[c.id] !== "na" && parseFloat(A[c.id]) < 1)
+    .map(c => ({ c, s: c.w * (1 - parseFloat(A[c.id])) })).sort((a, b) => b.s - a.s);
+  if (!gaps.length) rep.appendChild(el("p", "", "Nenhuma lacuna identificada nos requisitos respondidos."));
+  else {
+    const tb = document.createElement("table"), th = document.createElement("tr");
+    ["Prioridade", "Requisito", "Situação", "O que fazer"].forEach(h => th.appendChild(el("th", "", h)));
+    tb.appendChild(th);
+    gaps.forEach(({ c, s }) => {
+      const tr = document.createElement("tr"), p = prio(s);
+      const t1 = el("td"); t1.appendChild(el("span", "tag " + p, p));
+      tr.append(t1, el("td", "", c.id + " · " + c.q), el("td", "", A[c.id] === "0" ? "Não atende" : "Parcial"), el("td", "", c.fix));
+      tb.appendChild(tr);
+    });
+    rep.appendChild(tb);
+  }
+  const act = el("p", "noprint");
+  const pb = el("button", "", "Salvar como PDF"); pb.onclick = () => window.print();
+  const vb = el("button", "sec", "Voltar ao questionário"); vb.style.marginLeft = "8px";
+  vb.onclick = () => { rep.style.display = "none"; $("form").style.display = "block"; };
+  act.append(pb, vb); rep.appendChild(act);
+  rep.style.display = "block"; $("form").style.display = "none"; window.scrollTo(0, 0);
+};
+</script>
+</body>
+</html>
