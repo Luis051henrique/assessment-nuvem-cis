@@ -2,18 +2,18 @@
 
 Sistema de assessment que mede a aderência de uma empresa a requisitos de segurança em nuvem, calcula o nível de risco por domínio e gera um plano de ação em PDF. Trabalho proposto pelo professor: a empresa responde se cada requisito é atendido, atendido parcialmente ou não atendido, e o sistema mostra o risco por tópico e o passo a passo para chegar a 100%.
 
-Frameworks desta versão: **CIS AWS Foundations Benchmark** (24 requisitos em 5 domínios) e **BACEN** (18 requisitos em 4 domínios, a partir da Res. CMN 4.893/2021 e da 5.274/2025). Prazo da entrega: primeiras semanas de dezembro de 2026.
+Frameworks desta versão: **CIS AWS Foundations Benchmark** (24 requisitos em 5 domínios), **BACEN** (18 requisitos em 4 domínios, a partir da Res. CMN 4.893/2021 e da 5.274/2025) e **AWS Well-Architected, pilar de segurança** (24 requisitos em 7 domínios). Prazo da entrega: primeiras semanas de dezembro de 2026.
 
 ## Como usar
 
-Abra `index.html` no navegador (não precisa de servidor nem de instalação). Responda cada requisito com Atende, Atende parcialmente, Não atende ou Não se aplica, clique em **Gerar relatório** e depois em **Salvar como PDF**. O seletor “Framework” troca o conjunto de requisitos, e os botões **Salvar respostas (JSON)** e **Carregar respostas** guardam e retomam o preenchimento de um framework.
+Abra `index.html` no navegador (não precisa de servidor nem de instalação). Responda cada requisito com Atende, Atende parcialmente, Não atende ou Não se aplica, clique em **Gerar relatório** e depois em **Salvar como PDF**. O seletor “Framework” troca o conjunto de requisitos, e os botões **Salvar respostas (JSON)** e **Carregar respostas** guardam e retomam o preenchimento de um framework. No relatório, também é possível exportar um CSV para Excel, copiar um resumo e enviá-lo por WhatsApp ou Telegram (o aplicativo abre com o texto pronto e você escolhe o contato). O resumo só sai do navegador quando você clica em enviar. O relatório inclui um mapa de calor com as lacunas de cada domínio por prioridade.
 
 ## Critérios de cálculo (adotados neste projeto)
 
 - Atende = 1, parcialmente = 0,5, não atende = 0. “Não se aplica” e requisitos sem resposta ficam fora do cálculo.
 - Aderência = soma ponderada (peso 1 a 3 por requisito) dividida pelo peso total respondido.
 - Risco por faixa de aderência: 90% ou mais = Baixo; 70 a 89% = Médio; 40 a 69% = Alto; abaixo de 40% = Crítico.
-- Prioridade da ação = peso × (1 − nota): mais alto primeiro.
+- Prioridade da ação = peso × (1 − nota): mais alto primeiro. Faixas: crítica a partir de 3, alta a partir de 1,5, média a partir de 1 e baixa abaixo disso (são as colunas do mapa de calor).
 
 Esses pesos e faixas são uma escolha do projeto, não parte do CIS. Os requisitos são um resumo em português: confira a redação e a numeração no benchmark oficial antes de citar na entrega.
 
@@ -23,6 +23,7 @@ Esses pesos e faixas são uma escolha do projeto, não parte do CIS. Os requisit
 index.html        interface e cálculo
 data/cis-aws.js   requisitos do CIS, perguntas e ações corretivas
 data/bacen-cloud.js  requisitos do BACEN (4.893 e 5.274)
+data/well-architected.js  requisitos do pilar de segurança da AWS
 README.md         este arquivo, com as referências
 ```
 
@@ -40,15 +41,15 @@ Pesquisa feita em 05/11/2026. Itens marcados com **[confirmar]** vieram de fonte
 - Versão: a página oficial lista a **7.0.0** como a mais recente do Foundations. Fontes de terceiros ainda citam a 6.0.0 (jan/2026), e o AWS Security Hub CSPM suporta as versões 5.0.0, 3.0.0, 1.4.0 e 1.2.0.
 - Acesso: PDF gratuito para uso não comercial, mediante cadastro (conferir os termos de uso).
 - O CIS mantém benchmarks separados de AWS Compute Services (2.0.0), Database Services (2.0.0), End User Compute Services (1.2.0) e Storage Services (1.0.0). Parte do domínio “Armazenamento” do app pode estar nesses documentos **[confirmar no PDF]**.
-- Uso no projeto: base da versão atual (`data/cis-aws.js`). Falta amarrar o resumo a uma versão e registrar a numeração oficial de cada recomendação.
+- Uso no projeto: base da versão atual (`data/cis-aws.js`). Falta amarrar o resumo a uma versão e registrar a numeração oficial de cada recomendação. Três requisitos do IAM já trazem a numeração da versão 1.4.0 (itens 1.4, 1.5 e 1.7), conforme o próprio documento do Well-Architected (SEC01-BP02).
 
 ### 2. AWS Well-Architected Framework: pilar de segurança
 
 - Página oficial: https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/welcome.html
 - PDF: https://docs.aws.amazon.com/pdfs/wellarchitected/latest/security-pillar/wellarchitected-security-pillar.pdf
-- Data: a página mostra publicação em 06/11/2024; o PDF traz copyright de 2025 **[confirmar a edição vigente]**.
-- Estrutura: sete áreas de boas práticas (fundamentos de segurança, identidade e acesso, detecção, proteção da infraestrutura, proteção de dados, resposta a incidentes e segurança de aplicações). Lista vinda de fonte secundária.
-- Uso no projeto: as áreas viram domínios e cada boa prática vira um requisito. É orientado a processo e arquitetura, então as perguntas serão mais abertas que as do CIS.
+- Data: o documento indica publicação em 06/11/2024 (copyright de 2026), conferido no PDF oficial em 05/11/2026.
+- Estrutura: sete áreas de boas práticas (fundamentos de segurança, identidade e acesso, detecção, proteção da infraestrutura, proteção de dados, resposta a incidentes e segurança de aplicações). Confirmado no próprio documento.
+- Uso no projeto: as áreas viram domínios e cada requisito resume uma boa prática. São 24 boas práticas (SEC01 a SEC11) escolhidas para cobrir as sete áreas, e o campo de referência traz o código SECxx-BPyy. Os pesos de SEC01 e SEC02 seguem o nível de risco do documento (alto = 3); os demais são estimativa do projeto. É orientado a processo e arquitetura, então as perguntas serão mais abertas que as do CIS.
 
 ### 3. LGPD (Lei nº 13.709/2018)
 
@@ -85,7 +86,10 @@ Pesquisa feita em 05/11/2026. Itens marcados com **[confirmar]** vieram de fonte
 - [x] Ler o texto final da Res. CMN 5.274/2025 e os arts. 11 a 18 da 4.893
 - [x] Incluir o BACEN
 - [x] Salvar e carregar respostas (JSON)
+- [x] Exportar CSV e compartilhar o resumo por WhatsApp e Telegram
+- [x] Mapa de calor das lacunas por domínio e prioridade
 - [ ] Baixar o PDF do CIS na versão escolhida e registrar a numeração oficial
 - [ ] Obter o guia e o checklist da ANPD no site oficial
 - [ ] Combinar com o professor se a entrega precisa de um ou de todos os frameworks
-- [ ] Incluir Well-Architected e LGPD
+- [x] Incluir o Well-Architected
+- [ ] Incluir a LGPD (depende do checklist oficial da ANPD)
