@@ -2,11 +2,11 @@
 
 Sistema de assessment que mede a aderência de uma empresa a requisitos de segurança em nuvem, calcula o nível de risco por domínio e gera um plano de ação em PDF. Trabalho proposto pelo professor: a empresa responde se cada requisito é atendido, atendido parcialmente ou não atendido, e o sistema mostra o risco por tópico e o passo a passo para chegar a 100%.
 
-Framework desta versão: **CIS AWS Foundations Benchmark** (resumo com 24 requisitos em 5 domínios). Prazo da entrega: primeiras semanas de dezembro de 2026.
+Frameworks desta versão: **CIS AWS Foundations Benchmark** (24 requisitos em 5 domínios) e **BACEN** (18 requisitos em 4 domínios, a partir da Res. CMN 4.893/2021 e da 5.274/2025). Prazo da entrega: primeiras semanas de dezembro de 2026.
 
 ## Como usar
 
-Abra `index.html` no navegador (não precisa de servidor nem de instalação). Responda cada requisito com Atende, Atende parcialmente, Não atende ou Não se aplica, clique em **Gerar relatório** e depois em **Salvar como PDF**.
+Abra `index.html` no navegador (não precisa de servidor nem de instalação). Responda cada requisito com Atende, Atende parcialmente, Não atende ou Não se aplica, clique em **Gerar relatório** e depois em **Salvar como PDF**. O seletor “Framework” troca o conjunto de requisitos, e os botões **Salvar respostas (JSON)** e **Carregar respostas** guardam e retomam o preenchimento de um framework.
 
 ## Critérios de cálculo (adotados neste projeto)
 
@@ -21,15 +21,18 @@ Esses pesos e faixas são uma escolha do projeto, não parte do CIS. Os requisit
 
 ```
 index.html        interface e cálculo
-data/cis-aws.js   requisitos, perguntas e ações corretivas
+data/cis-aws.js   requisitos do CIS, perguntas e ações corretivas
+data/bacen-cloud.js  requisitos do BACEN (4.893 e 5.274)
 README.md         este arquivo, com as referências
 ```
 
 ## Adicionar outro framework
 
-Copie `data/cis-aws.js` para, por exemplo, `data/well-architected.js`, troque os domínios e requisitos e ajuste a tag `<script src>` no `index.html`.
+Copie `data/bacen-cloud.js` para, por exemplo, `data/well-architected.js`, troque o identificador (`["well-architected"]`), os domínios e os requisitos, e adicione uma tag `<script src="data/well-architected.js"></script>` no `index.html`, junto das outras. O framework aparece sozinho no seletor. Campos opcionais: `ref` (artigo ou controle de origem) e `aviso` (texto de aplicabilidade).
 
 ## Referências
+
+Pesquisa feita em 05/11/2026. Itens marcados com **[confirmar]** vieram de fonte secundária ou de texto preliminar e devem ser conferidos na fonte oficial antes da entrega.
 
 ### 1. CIS AWS Foundations Benchmark
 
@@ -59,12 +62,12 @@ Copie `data/cis-aws.js` para, por exemplo, `data/well-architected.js`, troque os
 
 ### 4. BACEN
 
-- Resolução CMN nº 4.893, de 26/02/2021: política de segurança cibernética e contratação de serviços de processamento, armazenamento de dados e computação em nuvem. Regras de nuvem nos arts. 11 a 18 **[confirmar]**. Texto: [Banco Central](https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20CMN&numero=4893)
+- Resolução CMN nº 4.893, de 26/02/2021: política de segurança cibernética e contratação de serviços de processamento, armazenamento de dados e computação em nuvem. Regras de nuvem nos arts. 11 a 18, conferidas na cópia do texto original de 2021; a versão consolidada atual pode ter outras alterações, então vale conferir no site do Banco Central. Texto: [Banco Central](https://www.bcb.gov.br/estabilidadefinanceira/exibenormativo?tipo=Resolu%C3%A7%C3%A3o%20CMN&numero=4893)
 - Resolução BCB nº 85/2021: mesmo objeto, para instituições de pagamento.
-- Resolução CMN nº 5.274, de 18/12/2025: **altera** a 4.893, com prazo de adequação até 01/03/2026. Fonte: [Voto 88/2025-CMN](https://normativos.bcb.gov.br/Votos/CMN/202588/Voto_do_CMN_88_2025.pdf). O anexo do voto é a minuta **[confirmar o texto final em normativos.bcb.gov.br]**.
+- Resolução CMN nº 5.274, de 18/12/2025: **altera** a 4.893, com prazo de adequação até 01/03/2026. Fonte: [Voto 88/2025-CMN](https://normativos.bcb.gov.br/Votos/CMN/202588/Voto_do_CMN_88_2025.pdf). Texto final conferido em 05/11/2026 em cópia do [LegisWeb](https://www.legisweb.com.br/legislacao/?id=488277); conferir também em normativos.bcb.gov.br.
 - Resolução BCB nº 498/2025: provedores de serviços de TI da rede do sistema financeiro (RSFN).
-- Segundo a minuta, os controles mínimos passam a incluir autenticação, criptografia, prevenção e detecção de intrusão, prevenção de vazamento de informações, proteção contra malware, rastreabilidade, backup, gestão de vulnerabilidades, controles de acesso, configuração segura, proteção de rede, gestão de certificados, integração segura de sistemas e inteligência de ameaças. Também prevê MFA para acesso à rede a partir de ambientes externos, teste de intrusão anual independente e isolamento dos ambientes Pix e STR, com instância dedicada quando houver nuvem.
-- Contratação de nuvem (fonte secundária, **[confirmar]**): serviços relevantes devem ser comunicados ao Banco Central em até 10 dias da contratação; no exterior há exigências específicas, como convênio entre o Banco Central e a autoridade do país.
+- Segundo o texto final, os controles mínimos passam a incluir autenticação, criptografia, prevenção e detecção de intrusão, prevenção de vazamento de informações, proteção contra malware, rastreabilidade, backup, gestão de vulnerabilidades, controles de acesso, configuração segura, proteção de rede, gestão de certificados, integração segura de sistemas e inteligência de ameaças. Também prevê MFA para acesso à rede a partir de ambientes externos, teste de intrusão anual independente e isolamento dos ambientes Pix e STR, com instância dedicada quando houver nuvem.
+- Contratação de nuvem (texto original da 4.893, conferido): serviços relevantes devem ser comunicados ao Banco Central em até 10 dias; no exterior, é preciso convênio entre o Banco Central e a autoridade do país ou autorização prévia (60 dias).
 - Atenção: valem só para instituições autorizadas a funcionar pelo Banco Central. O assessment precisa de um filtro de aplicabilidade para esse framework.
 
 ### 5. Como cada referência vira requisito
@@ -76,3 +79,13 @@ Copie `data/cis-aws.js` para, por exemplo, `data/well-architected.js`, troque os
 | LGPD + ANPD | Obrigação legal e orientação | Por artigo e checklist | Quem trata dados pessoais |
 | BACEN | Norma regulatória | Por artigo da resolução | Só instituições reguladas pelo BC |
 
+## Próximos passos
+
+- [x] Pesquisar e anotar referências
+- [x] Ler o texto final da Res. CMN 5.274/2025 e os arts. 11 a 18 da 4.893
+- [x] Incluir o BACEN
+- [x] Salvar e carregar respostas (JSON)
+- [ ] Baixar o PDF do CIS na versão escolhida e registrar a numeração oficial
+- [ ] Obter o guia e o checklist da ANPD no site oficial
+- [ ] Combinar com o professor se a entrega precisa de um ou de todos os frameworks
+- [ ] Incluir Well-Architected e LGPD
